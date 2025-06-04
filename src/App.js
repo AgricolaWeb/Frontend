@@ -1,0 +1,278 @@
+import "./App.css";
+import ResourceBoard from "./boards/ResourceBoard";
+import PersonalBoard from "./boards/PersonalBoard";
+import CurrentRoundBoard from "./boards/CurrentRoundBoard";
+import MajorBoard from "./boards/MajorBoard";
+import useSocket from "./functions/Socket";
+import { useState } from "react";
+import RoundBoard from "./boards/RoundBoard";
+import ActionBoard from "./boards/ActionBoard";
+import ProfileBoard from "./boards/ProfileBoard";
+import usePlacementManager from "./functions/PlacementManager";
+import CardBoard from "./boards/CardBoard";
+import ChoiceManage from "./functions/ChoiceManage";
+import CardChoice from "./functions/CardChoice";
+import ActiveBoard from "./boards/ActiveBoard";
+function App() {
+    const [started, setStarted] = useState(false);
+    const [currentRound, setCurrentRound] = useState(null);
+    const [openedCards, setOpenedCards] = useState([]);
+    const [accumulatedResources, setAccumulatedResources] = useState([]);
+    const [turnOrder, setTurnOrder] = useState([]);
+    const [currentPlayerId, setCurrentPlayerId] = useState(null);
+    const [currentResources, setCurrentResources] = useState({});
+    const [availableCards, setAvailableCards] = useState([]);
+    const [majorImprovementCards, setMajorImprovementCards] = useState([]);
+    const [minorCards, setMinorCards] = useState([]);
+    const [occupationCards, setOccupationCards] = useState([]);
+    const [majorCards, setMajorCards] = useState([]);
+    const [activeCards, setActiveCards] = useState([]);
+    const [validPositions, setValidPositions] = useState([]);
+    const [showChoiceModal, setShowChoiceModal] = useState(false);
+    const [choiceType, setChoiceType] = useState(null);
+    const [choiceOptions, setChoiceOptions] = useState([]);
+    const [choicePlayerId, setChoicePlayerId] = useState(null);
+    const [showCardChoice, setShowCardChoice] = useState(false);
+    const [cardOptions, setCardOptions] = useState([]);
+
+    const handleGameState = (payload) => {
+        console.log("게임 진행..", payload);
+        if (payload.turnOrder) {
+            setTurnOrder(payload.turnOrder);
+        }
+        if (payload.currentRound != null) {
+            setCurrentRound(payload.currentRound);
+        }
+        if (payload.type === "cards" && Array.isArray(payload.data)) {
+            //카드 선택지가 발생한경우
+            setCardOptions(payload.data);
+            setShowCardChoice(true);
+            setChoicePlayerId(payload.playerId);
+            return;
+        }
+
+        if (Array.isArray(payload.accumulatedResources)) {
+            setAccumulatedResources(payload.accumulatedResources);
+        }
+        if (Array.isArray(payload.openedCards)) {
+            setOpenedCards(payload.openedCards);
+        }
+        if (payload.playerId) {
+            setCurrentPlayerId(payload.playerId);
+        }
+        if (Array.isArray(payload.availableCards)) {
+            setAvailableCards(payload.availableCards.map((c) => c.id));
+        }
+        if (Array.isArray(payload.majorImprovementCards)) {
+            setMajorImprovementCards(payload.majorImprovementCards);
+        }
+        if (payload.resources) {
+            setCurrentResources(payload.resources);
+        }
+        if (Array.isArray(payload.occupationCards)) {
+            setOccupationCards(payload.occupationCards);
+        }
+        if (Array.isArray(payload.majorCards)) {
+            setMajorCards(payload.majorCards);
+        }
+        if (Array.isArray(payload.minorImprovementCards)) {
+            setMinorCards(payload.minorImprovementCards);
+        }
+        if (Array.isArray(payload.activeCards)) {
+            setActiveCards(payload.activeCards);
+        }
+    };
+
+    const handlePlayerResources = (payload) => {
+        console.log("플레이어의 자원 정보", payload);
+    };
+
+    const handleValidPositions = (payload) => {
+        console.log("단일 좌표 처리 요청..", payload);
+        if (Array.isArray(payload.validPositions)) {
+            setValidPositions(payload.validPositions);
+        }
+    };
+
+    const handleChoiceRequest = (payload) => {
+        console.log("선택지가 발생하였습니다→", payload);
+        if (!payload.choiceType || !payload.options || !payload.playerId) {
+            return;
+        }
+        setChoiceType(payload.choiceType);
+
+        setChoiceOptions(Object.entries(payload.options));
+        setChoicePlayerId(payload.playerId);
+        setShowChoiceModal(true);
+    };
+    const handleSendChoice = (choicePayload) => {
+        sendChoice(choicePayload);
+    };
+    const handleCloseModal = () => {
+        setShowChoiceModal(false);
+        setChoiceType(null);
+        setChoiceOptions([]);
+        setChoicePlayerId(null);
+    };
+
+    const handleMajorCards = (payload) => {
+        console.log("📩 /topic/majorImprovementCards →", payload);
+        // 여기에 setMajorImprovementCards 등으로 상태 갱신 가능
+    };
+
+    const handleActiveCards = (payload) => {
+        console.log("활성화 된 카드", payload);
+        // 여기에 setActiveCards 등으로 상태 갱신 가능
+    };
+
+    const handleExchangeableCards = (payload) => {
+        console.log("📩 /topic/exchangeableCards →", payload);
+    };
+
+    const handlePlayerBoard = (payload) => {
+        console.log("📩 /topic/playerBoard →", payload);
+    };
+    const handleSendPosition = ({ playerId, x, y }) => {
+        console.log("선택한 단일 좌표->", { playerId, x, y });
+        sendPosition({ playerId, x, y });
+        setValidPositions([]); // 클릭후 validPositions 초기화
+    };
+
+    const {
+        connectSocket,
+        performAction,
+        performRound,
+        sendPosition,
+        sendChoice,
+        sendCard,
+    } = useSocket(
+        handleGameState,
+        handlePlayerResources,
+        handleValidPositions,
+        handleChoiceRequest,
+        handleMajorCards,
+        handleActiveCards,
+        handleExchangeableCards,
+        handlePlayerBoard
+    );
+
+    const handleStart = () => {
+        connectSocket();
+        setStarted(true);
+    };
+
+    const handleSendCard = ({ playerId, cardId }) => {
+        console.log("카드 선택 이후 전송되는 카드", { playerId, cardId });
+        sendCard({ playerId, cardId });
+        setShowCardChoice(false);
+        setCardOptions([]);
+    };
+
+    const handleCloseCardChoice = () => {
+        setShowCardChoice(false);
+        setCardOptions([]);
+    };
+    const { actionPlacements, roundPlacements, handleActionSelect, handleRoundSelect } =
+        usePlacementManager(currentRound, performAction, performRound); //라운드가 변경되지 않으면 행동보드, 라운드 보드내 가족 구성원 이동 기록
+    return (
+        <div className="relative w-screen h-screen p-4">
+            <img
+                src="/image/background.png"
+                alt="배경"
+                className="absolute inset-0 w-full h-full object-cover -z-10"
+            />
+            <CardChoice
+                show={showCardChoice}
+                cards={cardOptions}
+                playerId={choicePlayerId}
+                onSendCard={handleSendCard}
+                onClose={handleCloseCardChoice}
+            />
+            <ChoiceManage
+                show={showChoiceModal}
+                choiceType={choiceType}
+                options={choiceOptions}
+                playerId={choicePlayerId}
+                onSendChoice={handleSendChoice}
+                onClose={handleCloseModal}
+            />
+
+            {!started && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
+                    <button
+                        onClick={handleStart}
+                        className="px-6 py-3 bg-blue-600 text-white text-xl rounded-lg shadow-lg"
+                    >
+                        게임을 시작하시겠습니까?
+                    </button>
+                </div>
+            )}
+
+            <div className={started ? "relative z-10" : "filter blur-md"}>
+                <div className="grid grid-cols-[2fr_3fr_3fr_3fr] grid-rows-[1fr_5fr_4fr] gap-4 h-full">
+                    <div className="col-start-1 row-start-1 row-span-3 p-2">
+                        <CurrentRoundBoard currentRound={currentRound} />
+                    </div>
+                    <div className="col-start-2 row-start-1 row-span-3">
+                        <ActionBoard
+                            accumulatedResources={accumulatedResources}
+                            onSelectAction={(id) =>
+                                handleActionSelect(id, availableCards, currentPlayerId)
+                            }
+                            placedSlots={actionPlacements}
+                        />
+                    </div>
+                    <div className="col-start-3 col-span-2 row-start-1 row-span-3">
+                        <RoundBoard
+                            openedCards={openedCards}
+                            onSelectRound={(id) =>
+                                handleRoundSelect(
+                                    id,
+                                    openedCards,
+                                    availableCards,
+                                    currentPlayerId
+                                )
+                            }
+                            placedRounds={roundPlacements}
+                        />
+                    </div>
+                    <div className="col-start-3 col-span-3 row-start-3 p-2">
+                        <ActiveBoard activeCards={activeCards} />
+                    </div>
+                    <div className="col-start-1 row-start-2 row-span-2">
+                        <ProfileBoard
+                            turnOrder={turnOrder}
+                            currentPlayerId={currentPlayerId}
+                        />
+                    </div>
+                    <div className="col-start-1 row-start-4 row-span-2">
+                        <ResourceBoard
+                            playerId={currentPlayerId}
+                            resources={currentResources}
+                        />
+                    </div>
+                    <div className="col-start-2 row-start-4 row-span-2">
+                        <PersonalBoard
+                            validPositions={validPositions}
+                            playerId={currentPlayerId}
+                            sendPosition={handleSendPosition}
+                            placements={[]}
+                        />
+                    </div>
+                    <div className="col-start-3 row-start-4 row-span-2">
+                        <CardBoard
+                            minorImprovementCards={minorCards}
+                            occupationCards={occupationCards}
+                            majorImprovementCards={majorCards}
+                        />
+                    </div>
+                    <div className="col-start-4 row-start-4 row-span-2">
+                        <MajorBoard majorImprovementCards={majorImprovementCards} />
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default App;
