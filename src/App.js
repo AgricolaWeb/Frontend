@@ -15,6 +15,7 @@ import CardChoice from "./functions/CardChoice";
 import ActiveBoard from "./boards/ActiveBoard";
 import Message from "./functions/Message";
 import EndGame from "./functions/EndGame";
+import BuildFence from "./functions/BuildFence";
 function App() {
   const [started, setStarted] = useState(false);
   const [currentRound, setCurrentRound] = useState(null);
@@ -39,11 +40,12 @@ function App() {
   const [messageQueue, setMessageQueue] = useState([]);
   const [currentMessage, setCurrentMessage] = useState(null);
   const [myBoardData, setMyBoardData] = useState({});
-
+  const [actionType, setActionType] = useState(null);
   const [scoreList, setScoreList] = useState([]);
 
   const handleGameState = (payload) => {
     console.log("게임 진행..", payload);
+
     if (typeof payload.message === "string") {
       setMessageQueue((prev) => [...prev, payload.message]);
     }
@@ -116,6 +118,10 @@ function App() {
       setValidPositions(payload.validPositions);
     }
   };
+  const handleSendFencePosition = ({ playerId, positions }) => {
+    console.log("울타리 전송 →", { playerId, positions });
+    sendFencePosition({ playerId, positions });
+  };
 
   const handleChoiceRequest = (payload) => {
     console.log("선택지가 발생하였습니다→", payload);
@@ -144,6 +150,10 @@ function App() {
 
   const handleActiveCards = (payload) => {
     console.log("활성화 된 카드", payload);
+    if (payload.actionType === "buildFence") {
+      console.log("🔥 액션 타입 설정됨 → buildFence");
+      setActionType("buildFence");
+    }
   };
 
   const handleExchangeableCards = (payload) => {
@@ -152,12 +162,15 @@ function App() {
 
   const handlePlayerBoard = (payload) => {
     setMyBoardData(payload.playerBoard);
-    // console.log("📩 개인보드다아아너아런아ㅣ", payload);
+    console.log("📩 개인보드다아아너아런아ㅣ", payload);
   };
   const handleSendPosition = ({ playerId, x, y }) => {
     console.log("선택한 단일 좌표->", { playerId, x, y });
     sendPosition({ playerId, x, y });
     setValidPositions([]); // 클릭후 validPositions 초기화
+  };
+  const resetActionType = () => {
+    setActionType(null);
   };
 
   const {
@@ -165,6 +178,7 @@ function App() {
     performAction,
     performRound,
     sendPosition,
+    sendFencePosition,
     sendChoice,
     sendCard,
   } = useSocket(
@@ -302,12 +316,23 @@ function App() {
             />
           </div>
           <div className="col-start-2 row-start-4 row-span-2">
-            <PersonalBoard
-              validPositions={validPositions}
-              playerId={currentPlayerId}
-              sendPosition={handleSendPosition}
-              playerBoard={myBoardData}
-            />
+            {actionType === "buildFence" ? (
+              <BuildFence
+                playerId={currentPlayerId}
+                playerBoard={myBoardData}
+                sendFencePosition={handleSendFencePosition}
+                onFinish={resetActionType}
+              />
+            ) : (
+              <PersonalBoard
+                validPositions={validPositions}
+                playerId={currentPlayerId}
+                actionType={actionType}
+                sendPosition={handleSendPosition}
+                sendFencePosition={handleSendFencePosition}
+                playerBoard={myBoardData}
+              />
+            )}
           </div>
           <div className="col-start-3 row-start-4 row-span-2">
             <CardBoard

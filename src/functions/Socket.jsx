@@ -1,4 +1,3 @@
-// src/Socket.jsx
 import { useRef } from "react";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
@@ -14,10 +13,10 @@ export default function useSocket(
   onPlayerBoard
 ) {
   const stompClient = useRef(null);
-  const gameID = "1234"; // 예시 room ID
+  const gameID = "1234";
 
   const connectSocket = () => {
-    if (stompClient.current) return; // 이미 연결되어 있으면 무시
+    if (stompClient.current) return;
 
     const socket = new SockJS("http://localhost:8090/gs-guide-websocket");
     stompClient.current = Stomp.over(socket);
@@ -70,6 +69,9 @@ export default function useSocket(
       stompClient.current.subscribe("/topic/activeCards", (msg) =>
         onActiveCards(JSON.parse(msg.body))
       );
+      stompClient.current.subscribe("/topic/fenceRequest", (msg) =>
+        onActiveCards(JSON.parse(msg.body))
+      );
       stompClient.current.subscribe("/topic/exchangeableCards", (msg) =>
         onExchangeableCards(JSON.parse(msg.body))
       );
@@ -116,6 +118,14 @@ export default function useSocket(
       JSON.stringify({ playerId, x, y })
     );
   };
+  const sendFencePosition = ({ playerId, positions }) => {
+    stompClient.current.send(
+      "/app/receiveSelectedFencePositions",
+      {},
+      JSON.stringify({ playerId, positions })
+    );
+  };
+
   const sendChoice = ({ playerId, choiceType, choice }) => {
     stompClient.current.send(
       "/app/playerChoice",
@@ -135,6 +145,7 @@ export default function useSocket(
     performAction,
     performRound,
     sendPosition,
+    sendFencePosition,
     sendChoice,
     sendCard,
   };
