@@ -80,7 +80,7 @@ export default function PersonalBoard({
   };
 
   return (
-    <div className="bg-green-700">
+    <div className="bg-white bg-opacity-60 rounded-lg m-2 w-[450px] h-[320px] flex flex-col justify-center items-center">
       {Array.from({ length: height }, (_, col) => (
         <div key={col} className="flex p-1 gap-x-1">
           {Array.from({ length: width }, (_, row) => {
@@ -108,10 +108,10 @@ export default function PersonalBoard({
               <div
                 key={`${row}-${col}`}
                 onClick={handleClick}
-                className={`relative w-20 h-20 border ${
+                className={`relative w-20 h-20 mr-0.5 ml-0.5 mt-2 mb-2 ${
                   valid
                     ? "cursor-pointer bg-white hover:bg-gray-100"
-                    : "cursor-default bg-green-500"
+                    : "cursor-default bg-personalCell "
                 }`}
               >
                 {/* 타일(방/밭/외양간) 렌더 */}

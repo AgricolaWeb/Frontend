@@ -231,7 +231,7 @@ function App() {
     console.log("게임을 종료합니다.");
   };
   return (
-    <div className="relative w-screen h-screen p-4">
+    <div className="relative w-screen h-screen  min-w-[1150px] min-h-[730px] p-4">
       <img
         src="/image/background.png"
         alt="배경"
@@ -265,15 +265,15 @@ function App() {
         <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
           <button
             onClick={handleStart}
-            className="px-6 py-3 bg-blue-600 text-white text-xl rounded-lg shadow-lg"
+            className="px-6 py-3 bg-startButtonBack text-startButtonFont text-2xl tracking-wider rounded-lg shadow-lg font-cinzel font-extrabold"
           >
-            게임을 시작하시겠습니까?
+            AGRICOLA START!
           </button>
         </div>
       )}
 
       <div className={started ? "relative z-10" : "filter blur-md"}>
-        <div className="grid grid-cols-[2fr_3fr_3fr_3fr] grid-rows-[1fr_5fr_4fr] gap-4 h-full">
+        <div className="grid grid-cols-[1.5fr_3fr_3fr_3fr] grid-rows-[1fr_1fr_4fr] gap-3 h-full">
           <div className="col-start-1 row-start-1 row-span-3 p-2">
             <CurrentRoundBoard currentRound={currentRound} />
           </div>
@@ -303,19 +303,19 @@ function App() {
           <div className="col-start-3 col-span-3 row-start-3 p-2">
             <ActiveBoard activeCards={activeCards} />
           </div>
-          <div className="col-start-1 row-start-2 row-span-2">
+          <div className="col-start-1 row-start-2 row-span-2 pt-4">
             <ProfileBoard
               turnOrder={turnOrder}
               currentPlayerId={currentPlayerId}
             />
           </div>
-          <div className="col-start-1 row-start-4 row-span-2">
+          <div className="col-start-1 row-start-4 row-span-2 pt-2">
             <ResourceBoard
               playerId={currentPlayerId}
               resources={currentResources}
             />
           </div>
-          <div className="col-start-2 row-start-4 row-span-2">
+          <div className="col-start-2 row-start-4 row-span-2 pt-2">
             {actionType === "buildFence" ? (
               <BuildFence
                 playerId={currentPlayerId}
@@ -334,14 +334,14 @@ function App() {
               />
             )}
           </div>
-          <div className="col-start-3 row-start-4 row-span-2">
+          <div className="col-start-3 row-start-4 row-span-2 pt-2">
             <CardBoard
               minorImprovementCards={minorCards}
               occupationCards={occupationCards}
               majorImprovementCards={majorCards}
             />
           </div>
-          <div className="col-start-4 row-start-4 row-span-2">
+          <div className="col-start-4 row-start-4 row-span-2 pt-2">
             <MajorBoard majorImprovementCards={majorImprovementCards} />
           </div>
         </div>

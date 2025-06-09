@@ -87,7 +87,7 @@ export default function BuildFence({
           </button>
         </div>
       )}
-      <div className="bg-green-800">
+      <div className="bg-white bg-opacity-60 rounded-lg m-2 w-[450px] h-[320px] flex flex-col justify-center items-center">
         {Array.from({ length: height }, (_, x) => (
           <div key={x} className="flex p-1 gap-x-1">
             {Array.from({ length: width }, (_, y) => {
@@ -99,10 +99,10 @@ export default function BuildFence({
                 <div
                   key={`${x}-${y}`}
                   onClick={() => handleClick(x, y)}
-                  className={`relative w-20 h-20 border ${
+                  className={`relative w-20 h-20 mr-0.5 ml-0.5 mt-2 mb-2 ${
                     valid
                       ? "cursor-pointer bg-white hover:bg-gray-100"
-                      : "cursor-default bg-green-500"
+                      : "cursor-default bg-personalCell"
                   }`}
                 >
                   {tile && tile.tileType && (
