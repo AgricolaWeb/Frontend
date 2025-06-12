@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
-
+const ALLOWED_MESSAGES = [
+  "농장 단계가 시작되었습니다.",
+  "농장 단계가 종료되었습니다.",
+  "가족 먹여살리기 단계가 시작되었습니다.",
+  "가족 먹여살리기 단계가 종료되었습니다.",
+  "라운드가 종료되었습니다. 가족 구성원이 집으로 돌아갑니다.",
+];
 export default function Message({ message, onAcknowledge }) {
   const [visible, setVisible] = useState(false);
   const [text, setText] = useState("");
-
-  const ALLOWED_MESSAGES = [
-    "농장 단계가 시작되었습니다.",
-    "농장 단계가 종료되었습니다.",
-    "가족 먹여살리기 단계가 시작되었습니다.",
-    "가족 먹여살리기 단계가 종료되었습니다.",
-    "라운드가 종료되었습니다. 가족 구성원이 집으로 돌아갑니다.",
-  ];
 
   useEffect(() => {
     if (!message) return;
