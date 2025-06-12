@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 export default function CurrentRoundBoard({ currentRound }) {
   if (currentRound == null) return null;
   return (

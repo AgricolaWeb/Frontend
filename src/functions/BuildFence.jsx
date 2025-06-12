@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function BuildFence({
   playerId,
@@ -18,13 +18,13 @@ export default function BuildFence({
     return cellData.tileType === "Empty" || cellData.tileType === "Barn";
   };
   //처음 울타리 설치인지 확인
-  const hasAnyFence = () => {
+  const hasAnyFence = useCallback(() => {
     return Object.values(playerBoard).some((tile) => {
       return (
         Array.isArray(tile.fences) && tile.fences.some((val) => val === true)
       );
     });
-  };
+  }, [playerBoard]);
   // 4곳중 울타리가 1개만 설치된 곳을 인접 영역으로 간주(수정 필요)
   const hasOnlyOneFence = (tile) => {
     if (!tile || !Array.isArray(tile.fences)) return false;
@@ -50,7 +50,7 @@ export default function BuildFence({
     }
 
     setValidFencePositions(nextValid);
-  }, [playerBoard]);
+  }, [playerBoard, hasAnyFence]);
 
   const isValid = (x, y) =>
     validFencePositions.some((pos) => pos.x === x && pos.y === y);
