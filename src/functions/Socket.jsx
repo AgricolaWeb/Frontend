@@ -19,7 +19,7 @@ export default function useSocket(
     if (stompClient.current) return;
 
     const socket = new SockJS(
-      "https://port-0-backend-mbt6zkf81fcdea31.sel4.cloudtype.app"
+      "https://port-0-backend-mbt6zkf81fcdea31.sel4.cloudtype.app/gs-guide-websocket"
     );
     stompClient.current = Stomp.over(socket);
     stompClient.current.debug = () => {}; //STOMP 내부 로그를 차단.
