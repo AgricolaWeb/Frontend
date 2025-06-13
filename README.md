@@ -1,72 +1,16 @@
-# Getting Started with Create React App
+npm start 이후 화면 중앙의 게임 시작 버튼을 누르면 게임이 시작됩니다.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+아그리콜라 보드게임을 온라인으로 만든것으로, 농부들이 자원 및 카드를 관리하며 점수를 겨루는 게임입니다.
 
-## Available Scripts
+만일 카드 정보나 플레이어 순서 정보 등이 보이지 않는다면 백엔드의 메세지를 기다리는 중이거나, 서버 연결이 끊긴 경우입니다.
 
-In the project directory, you can run:
+4명의 플레이어가 함께 플레이하는 게임으로, 각 플레이어의 턴에 해당 플레이어의 개인보드,자원보드,카드 정보가 보여집니다.
 
-### `npm start`
+가족 구성원은 유효한 행동칸(다른 가족 구성원이 올라가지 않은, 오픈된 라운드 카드나 행동칸)에 올려질 수 있습니다.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+만일 행동칸에 올라갔는데 적용되지 않은 경우 해당 행동을 위한 자원이 부족한 경우일 수 있습니다.
+(예를 들어 방 늘리기를 하려고 하였는데, 나무가 5개 미만의 경우 해당 행동은 불가하여 적용되지 않습니다.)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+수확 내에 가족 먹여살리기 단계에서 음식이 부족한 경우엔 자동으로 구걸카드를 가져옵니다.
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-# This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-
-# Frontend
+게임 내의 울타리,집,밭은 지어진 곳이 있다면 그곳을 인접하여서 지어져야합니다.
